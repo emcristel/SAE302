@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox
 
 
 class MainWindow(QMainWindow):
@@ -12,20 +12,27 @@ class MainWindow(QMainWindow):
         self.lab = QLabel("Saisir votre nom")
         self.text = QLineEdit("")
         self.prenom = QLabel("")
+        self.choix = QComboBox()
+        self.choix.addItem("OS")
+        self.choix.addItem("RAM")
+        self.choix.addItem("CPU")
+        self.choix.addItem("IP")
+        self.choix.addItem("Name")
         ok = QPushButton("Ok")
         quit = QPushButton("Quitter")
 
 
         grid.addWidget(self.lab, 0, 0, 1, 2)
         grid.addWidget(self.text, 1, 0, 1, 2)
+        grid.addWidget(self.choix, 1, 2, 1, 2)
         grid.addWidget(self.prenom, 2, 0)
-        grid.addWidget(ok, 3, 0, 1, 2)
-        grid.addWidget(quit, 4, 0, 1, 2)
+        grid.addWidget(ok, 3, 0, 1, 4)
+        grid.addWidget(quit, 4, 0, 1, 4)
 
 
         ok.clicked.connect(self.__actionOk)
         quit.clicked.connect(self.__actionQuitter)
-        self.setWindowTitle("Ma fenêtre")
+        self.setWindowTitle("Mon Application")
 
     def __actionOk(self):
         leprenom=self.text.text()
