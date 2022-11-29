@@ -1,23 +1,28 @@
 import socket
 
-serveur_socket=socket.socket()
-serveur_socket.bind(("127.0.0.1", 10000))
-serveur_socket.listen(1)
-print("Serveur démarré...")
+msg = ""
+data = ""
 
-while True:
-    conn, address= serveur_socket.accept()
-    msg = ""
-    data = ""
 
-    while msg!= "exit" and msg!="bye" and data!= "exit" and data!="bye":
-        data=conn.recv(1024).decode()
-        print(data)
-        msg=input("serveur -->")
-        conn.send(msg.encode())
+while msg!= "kill" and data!= "kill":
+    serveur_socket=socket.socket()
+    serveur_socket.bind(("127.0.0.1", 10001))
+    serveur_socket.listen(1)
+    print("Serveur démarré...")
 
-    conn.close
-    rep=input("continuer (y/n):")
-    if rep =='n':
-        break
+    while msg!="kill" and msg!="reset" and data!="kill" and data!="reset":
+        serv, addr = serveur_socket.accept()
+
+        while msg!= "kill" and msg!="reset" and msg!="disconnect" and data!= "kill" and data!="reset" and data!="disconnect":
+            data = serv.recv(1024).decode()
+            print(data)
+#            msg=input("serveur -->")
+            serv.send(data.encode())
+
+        serv.close()
+
+        rep=input("continuer (y/n):")
+        if rep =='n':
+            break
+
 serveur_socket.close()

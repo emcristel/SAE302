@@ -1,7 +1,18 @@
+import socket
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
 import platform
 import cpuinfo
+import netaddr # install with pip install netaddr
+import netifaces # install with pip install netifaces
+
+menu = input("Pour se connecter au serveur n°1 taper 1. Pour se connecter au serveur n°2 taper 2 : ")
+
+if menu == 1:
+    port = 10000
+else:
+    port = 10001
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -10,10 +21,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         grid = QGridLayout()
         widget.setLayout(grid)
-        self.lab = QLabel("Saisir votre nom")
+        self.lab = QLabel("Saisir votre message")
         self.text = QLineEdit("")
-        self.prenom = QLabel("")
-        self.info = QLabel("")
+        self.message = QTextEdit("")
+        self.info = QTextEdit("")
         self.choix = QComboBox()
         self.choix.addItem("OS")
         self.choix.addItem("RAM")
@@ -22,37 +33,77 @@ class MainWindow(QMainWindow):
         self.choix.addItem("Name")
         self.ok = QPushButton("Ok")
         self.quit = QPushButton("Quitter")
+        self.kill = QPushButton("Kill")
+        self.reset = QPushButton("Reset")
         self.aide =QPushButton("?")
 
 
         grid.addWidget(self.lab, 0, 0, 1, 2)
         grid.addWidget(self.text, 1, 0, 1, 2)
         grid.addWidget(self.choix, 1, 2, 1, 2)
-        grid.addWidget(self.prenom, 2, 0)
-        grid.addWidget(self.info, 2,2)
-        grid.addWidget(self.ok, 3, 0, 1, 4)
+        grid.addWidget(self.message, 3, 0)
+        grid.addWidget(self.info, 3,2)
+        grid.addWidget(self.ok, 2, 0, 1, 4)
         grid.addWidget(self.quit, 4, 0, 1, 4)
-        grid.addWidget(self.aide,5, 4)
+        grid.addWidget(self.reset, 5, 0, 1, 4)
+        grid.addWidget(self.kill, 6, 0, 1, 4)
+        grid.addWidget(self.aide,7, 3)
 
 
-        self.ok.clicked.connect(self.__actionOk)
+        self.ok.clicked.connect(self.__actionOkCbox)
         self.quit.clicked.connect(self.__actionQuitter)
         self.aide.clicked.connect(self.__actionAide)
         self.setWindowTitle("Mon Application")
 
 
-    def __actionOk(self):
-        leprenom=self.text.text()
-        self.prenom.setText(f"Bonjour {leprenom} !")
-        try:
+    def __actionOkText(self):
+        mess=self.text.text()
+        socket_client.send(mess.encode())
+        print("Message envoyé")
+        data = socket_client.recv(1024).decode()
+        self.info.append(f"{data}")
+
+
+    def __actionOkCbox(self):
+        socket_client.send(self.choix.currentText().encode())
+        data = socket_client.recv(1024).decode()
+        self.info.append(f"{data}")
+
+
+        """try:
+
             if self.choix.currentText() == "OS":
-                os= platform.platform()
-                self.info.setText(f"Operating system: {os}")
+                msg="os"
+                socket_client.send(msg.encode())
+                data = socket_client.recv(1024).decode()
+                self.info.append(f"{data}")
+
             elif self.choix.currentText() == "CPU":
-                my_cpuinfo = cpuinfo.get_cpu_info()
-                self.info.setText(f"CPU: {my_cpuinfo}")
+                msg="CPU"
+                socket_client.send(msg.encode())
+                data = socket_client.recv(1024).decode()
+                self.info.append(f"{data}")
+
+            elif self.choix.currentText() == "IP":
+                msg="IP"
+                socket_client.send(msg.encode())
+                data = socket_client.recv(1024).decode()
+                self.sortie.append(f"{data}")
+
+            elif self.choix.currentText() == "RAM":
+                msg="RAM"
+                socket_client.send(msg.encode())
+                data = socket_client.recv(1024).decode()
+                self.info.append(f"{data}")
+
+            else:
+                msg="Name"
+                socket_client.send(msg.encode())
+                data = socket_client.recv(1024).decode()
+                self.info.append(f"{data}")
+
         except ValueError:
-            QMessageBox.critical(self, "Erreur", "Entrez un nombre")
+            QMessageBox.critical(self, "Erreur")"""
 
     def __actionQuitter(self):
         QCoreApplication.exit(0)
@@ -64,6 +115,9 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    socket_client = socket.socket()
+    socket_client.connect(("localhost", port))
+    print("Connexion établie...")
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
