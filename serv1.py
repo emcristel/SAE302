@@ -11,6 +11,7 @@ data = ""
 while msg!= "kill" and data!= "kill":
     serveur_socket=socket.socket()
     serveur_socket.bind(("127.0.0.1", 10000))
+    print(f"localhost 10000")
     serveur_socket.listen(1)
     print("Serveur démarré...")
 

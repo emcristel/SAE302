@@ -3,14 +3,6 @@ import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
 
 
-menu = input("Pour se connecter au serveur n°1 taper 1. Pour se connecter au serveur n°2 taper 2 : ")
-
-if menu == 1:
-    port = 10000
-else:
-    port = 10001
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -66,10 +58,12 @@ class MainWindow(QMainWindow):
 
     def __actionOkCbox(self):
         
-        #socket_client.send(self.choix.currentText().encode())
-        #data = socket_client.recv(1024).decode()
-        #self.info.append(f"{data}")
+        socket_client.send(self.choix.currentText().encode())
+        data = socket_client.recv(1024).decode()
+        self.info.append(f"{data}")
+
         
+        """""
         try:
 
             if self.choix.currentText() == "OS":
@@ -104,7 +98,7 @@ class MainWindow(QMainWindow):
 
         except ValueError:
             QMessageBox.critical(self, "Erreur")
-
+        """
 
 
     def __actionQuitter(self):
@@ -125,7 +119,14 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    menu = input("Pour se connecter au serveur n°1 taper 1. Pour se connecter au serveur n°2 taper 2 : ")
+    if menu == "1":
+        port = 10000
+    else:
+        port = 10001
+
     socket_client = socket.socket()
+    print(f"localhost {port}")
     socket_client.connect(("localhost", port))
     print("Connexion établie...")
     app = QApplication(sys.argv)
