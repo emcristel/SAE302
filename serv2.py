@@ -1,4 +1,8 @@
 import socket
+import platform
+import psutil
+import netaddr # install with pip install netaddr
+import netifaces # install with pip install netifaces
 
 msg = ""
 data = ""
@@ -16,13 +20,45 @@ while msg!= "kill" and data!= "kill":
         while msg!= "kill" and msg!="reset" and msg!="disconnect" and data!= "kill" and data!="reset" and data!="disconnect":
             data = serv.recv(1024).decode()
             print(data)
-#            msg=input("serveur -->")
-            serv.send(data.encode())
+
+            if data == "os" or data == "OS" :
+                os= platform.system()
+                msg=str(f"Operating system: {os}")
+                serv.send(msg.encode())
+
+            elif data == "cpu" or data == "CPU" :
+                cpu =  psutil.cpu_percent(4)
+                msg=str(f"CPU: {cpu}")
+                serv.send(msg.encode())
+            
+            elif data == "ip" or data == "IP" :
+                netifaces.interfaces()
+                adresse_ip = netifaces.ifaddresses('en0')[2][0]['addr']
+                netaddr_adresse_ip = netaddr.IPAddress(adresse_ip)
+                msg=str(f"IP: {netaddr_adresse_ip}")
+                serv.send(msg.encode())
+
+            elif data == "ram" or data == "RAM" :
+                ram=psutil.virtual_memory()[2]
+                msg=str(f'RAM memory % used:{ram}')
+                serv.send(msg.encode())
+
+            elif data == "name" or data == "Name" :
+                name=platform.node()
+                msg=str(f"Mon nom est: {name}")
+                serv.send(msg.encode())
+
+            else:
+
+                msg=input("serveur -->")
+                serv.send(msg.encode())
+
 
         serv.close()
 
-        rep=input("continuer (y/n):")
+        rep=input("continuer la discussion (y/n):")
         if rep =='n':
             break
 
-serveur_socket.close()
+if data == "kill" or msg == "kill":
+    serveur_socket.close()

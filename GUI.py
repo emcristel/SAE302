@@ -1,10 +1,7 @@
 import socket
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
-import platform
-import cpuinfo
-import netaddr # install with pip install netaddr
-import netifaces # install with pip install netifaces
+
 
 menu = input("Pour se connecter au serveur n°1 taper 1. Pour se connecter au serveur n°2 taper 2 : ")
 
@@ -23,7 +20,6 @@ class MainWindow(QMainWindow):
         widget.setLayout(grid)
         self.lab = QLabel("Saisir votre message")
         self.text = QLineEdit("")
-        self.message = QTextEdit("")
         self.info = QTextEdit("")
         self.choix = QComboBox()
         self.choix.addItem("OS")
@@ -32,6 +28,7 @@ class MainWindow(QMainWindow):
         self.choix.addItem("IP")
         self.choix.addItem("Name")
         self.ok = QPushButton("Ok")
+        self.okcbox = QPushButton("Ok")
         self.quit = QPushButton("Quitter")
         self.kill = QPushButton("Kill")
         self.reset = QPushButton("Reset")
@@ -41,17 +38,20 @@ class MainWindow(QMainWindow):
         grid.addWidget(self.lab, 0, 0, 1, 2)
         grid.addWidget(self.text, 1, 0, 1, 2)
         grid.addWidget(self.choix, 1, 2, 1, 2)
-        grid.addWidget(self.message, 3, 0)
-        grid.addWidget(self.info, 3,2)
-        grid.addWidget(self.ok, 2, 0, 1, 4)
+        grid.addWidget(self.info, 3, 0, 1, 4)
+        grid.addWidget(self.ok, 2, 0, 1, 2)
+        grid.addWidget(self.okcbox, 2, 2, 1, 2)
         grid.addWidget(self.quit, 4, 0, 1, 4)
         grid.addWidget(self.reset, 5, 0, 1, 4)
         grid.addWidget(self.kill, 6, 0, 1, 4)
         grid.addWidget(self.aide,7, 3)
 
 
-        self.ok.clicked.connect(self.__actionOkCbox)
+        self.okcbox.clicked.connect(self.__actionOkCbox)
+        self.ok.clicked.connect(self.__actionOkText)
         self.quit.clicked.connect(self.__actionQuitter)
+        self.kill.clicked.connect(self.__actionKill)
+        self.reset.clicked.connect(self.__actionReset)
         self.aide.clicked.connect(self.__actionAide)
         self.setWindowTitle("Mon Application")
 
@@ -65,12 +65,12 @@ class MainWindow(QMainWindow):
 
 
     def __actionOkCbox(self):
-        socket_client.send(self.choix.currentText().encode())
-        data = socket_client.recv(1024).decode()
-        self.info.append(f"{data}")
-
-
-        """try:
+        
+        #socket_client.send(self.choix.currentText().encode())
+        #data = socket_client.recv(1024).decode()
+        #self.info.append(f"{data}")
+        
+        try:
 
             if self.choix.currentText() == "OS":
                 msg="os"
@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
                 msg="IP"
                 socket_client.send(msg.encode())
                 data = socket_client.recv(1024).decode()
-                self.sortie.append(f"{data}")
+                self.info.append(f"{data}")
 
             elif self.choix.currentText() == "RAM":
                 msg="RAM"
@@ -103,9 +103,19 @@ class MainWindow(QMainWindow):
                 self.info.append(f"{data}")
 
         except ValueError:
-            QMessageBox.critical(self, "Erreur")"""
+            QMessageBox.critical(self, "Erreur")
+
+
 
     def __actionQuitter(self):
+        
+        QCoreApplication.exit(0)
+    
+    def __actionKill(self):
+        socket_client.close()
+        QCoreApplication.exit(0)
+
+    def __actionReset(self):
         QCoreApplication.exit(0)
 
     def __actionAide(self):
