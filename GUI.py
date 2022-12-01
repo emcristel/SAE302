@@ -1,7 +1,7 @@
 import socket
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
-
+import threading
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -102,8 +102,10 @@ class MainWindow(QMainWindow):
 
 
     def __actionQuitter(self):
-        
-        QCoreApplication.exit(0)
+        mess= "disconnect"
+        socket_client.send(mess.encode())
+
+
     
     def __actionKill(self):
         socket_client.close()
@@ -113,7 +115,7 @@ class MainWindow(QMainWindow):
         QCoreApplication.exit(0)
 
     def __actionAide(self):
-        QMessageBox.information(self, "Aide","Choisissez une information du pc, de la vm que vous voullez récupérer (l'os, le nom, l'ip, ...).")
+        QMessageBox.information(self, "Aide","Choisissez une information du pc, de la vm que vous voulez récupérer (l'os, le nom, l'ip, ...).")
 
 
 

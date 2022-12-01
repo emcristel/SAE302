@@ -20,3 +20,15 @@ print()
 # Calling psutil.cpu_precent() for 4 seconds
 print('The CPU usage is: ', psutil.cpu_percent(4))
 
+"""""
+            elif data.startswith("DOS:mkdir"):
+                nom = data.split()[1]
+                os.mkdir(nom)
+                msg = msg=str(f"Le dossier {nom} a été créé.")
+                serv.send(msg.encode())
+
+            elif data.startswith("ping"):
+                address = data.split()[1]
+                os.system("ping -c 1 " + address)
+                msg = msg=str(f"ping: {address}")
+                serv.send(msg.encode())"""
