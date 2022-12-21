@@ -10,6 +10,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         grid = QGridLayout()
         widget.setLayout(grid)
+
+
         self.lab = QLabel("Saisir votre message")
         self.text = QLineEdit("")
         self.info = QTextEdit("")
@@ -47,11 +49,10 @@ class MainWindow(QMainWindow):
         self.aide.clicked.connect(self.__actionAide)
         self.setWindowTitle("Mon Application")
 
-
+        
     def __actionOkText(self):
         mess=self.text.text()
         socket_client.send(mess.encode())
-        print("Message envoyé")
         data = socket_client.recv(1024).decode()
         self.info.append(f"{data}")
 
@@ -61,7 +62,15 @@ class MainWindow(QMainWindow):
         socket_client.send(self.choix.currentText().encode())
         data = socket_client.recv(1024).decode()
         self.info.append(f"{data}")
-
+    def connect(self):
+        addr=self.line_edit3.text()
+        port = int(addr.split(":")[1])
+        ip = addr.split(":")[0]
+        self.client_socket= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect(ip, port)
+        print("Connexion établie ...")
+        QMessageBox.information(self, "Conexion", "Connexion réussie")
+        self.message = "rien"
         
         """""
         try:

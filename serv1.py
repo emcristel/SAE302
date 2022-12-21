@@ -3,6 +3,7 @@ import platform
 import psutil
 import netaddr # install with pip install netaddr
 import netifaces # install with pip install netifaces
+import os
 
 msg = ""
 data = ""
@@ -11,7 +12,6 @@ data = ""
 while msg!= "kill" and data!= "kill":
     serveur_socket=socket.socket()
     serveur_socket.bind(("127.0.0.1", 10000))
-    print(f"localhost 10000")
     serveur_socket.listen(1)
     print("Serveur démarré...")
 
@@ -50,15 +50,26 @@ while msg!= "kill" and data!= "kill":
                 serv.send(msg.encode())
 
             else:
+                cmd = data
+                verif = os.system(cmd)
+                msg = os.popen(cmd).read()
 
-                msg=input("serveur -->")
-                serv.send(msg.encode())
+                if verif == 0:
 
+                    if msg != "":
+                        serv.send(msg.encode())    
+                    else:
+                        serv.send(f"{cmd} ok".encode())
+                else:
+                    msg=str(f'{cmd} ne peut pas être lancée')
+                    serv.send(msg.encode())
 
+        
         serv.close()
 
-        rep=input("continuer (y/n):")
+        rep=input("continuer la discussion (y/n):")
         if rep =='n':
             break
 
-serveur_socket.close()
+if data == "kill" or msg == "kill":
+    serveur_socket.close()
