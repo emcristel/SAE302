@@ -49,7 +49,20 @@ while msg!= "kill" and data!= "kill":
                 msg=str(f"Mon nom est: {name}")
                 serv.send(msg.encode())
 
-            else:
+            elif data == "disconnect":
+                rien = ""
+                serv.send(rien.encode())
+            
+            elif data == "kill":
+                rien = ""
+                serv.send(rien.encode())
+
+            elif data == "kill":
+                rien = ""
+                serv.send(rien.encode())
+
+
+            else: 
                 cmd = data
                 verif = os.system(cmd)
                 msg = os.popen(cmd).read()
@@ -63,13 +76,13 @@ while msg!= "kill" and data!= "kill":
                 else:
                     msg=str(f'{cmd} ne peut pas être lancée')
                     serv.send(msg.encode())
+            
 
         
         serv.close()
+        print ("CONNECTION FERMÉ !")
 
-        rep=input("continuer la discussion (y/n):")
-        if rep =='n':
-            break
 
 if data == "kill" or msg == "kill":
     serveur_socket.close()
+    print ("SERVEUR FERMÉ !")

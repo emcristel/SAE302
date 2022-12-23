@@ -114,14 +114,15 @@ class MainWindow(QMainWindow):
         mess= "disconnect"
         socket_client.send(mess.encode())
 
-
     
     def __actionKill(self):
-        socket_client.close()
-        QCoreApplication.exit(0)
+        mess= "kill"
+        socket_client.send(mess.encode())
 
     def __actionReset(self):
-        QCoreApplication.exit(0)
+        mess= "reset"
+        socket_client.send(mess.encode())
+
 
     def __actionAide(self):
         QMessageBox.information(self, "Aide","Choisissez une information du pc, de la vm que vous voulez récupérer (l'os, le nom, l'ip, ...).")
