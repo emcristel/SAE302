@@ -111,15 +111,15 @@ class MainWindow(QMainWindow):
 
     def __actionOkText(self):
         mess=self.text.text()
-        socket_client.send(mess.encode())
-        data = socket_client.recv(1024).decode()
+        self.__socket_client.send(mess.encode())
+        data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
 
 
     def __actionOkCbox(self):
         
-        socket_client.send(self.choix.currentText().encode())
-        data = socket_client.recv(1024).decode()
+        self.__socket_client.send(self.choix.currentText().encode())
+        data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
 
         
@@ -163,16 +163,16 @@ class MainWindow(QMainWindow):
 
     def __actionQuitter(self):
         mess= "disconnect"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
 
     
     def __actionKill(self):
         mess= "kill"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
 
     def __actionReset(self):
         mess= "reset"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
 
 
     def __actionAide(self):
