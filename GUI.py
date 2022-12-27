@@ -4,6 +4,11 @@ from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLa
 import threading
 
 
+####                         ####
+#### PARTIE THREADING CLIENT ####
+####                         ####
+
+
 class Client(threading.Thread):
 
     def __init__(self, host, port):
@@ -42,6 +47,10 @@ class Client(threading.Thread):
         if (self.__connect() ==0):
             self.__dialogue()
 
+
+####                            ####
+#### PARTIE INTERFACE GRAPHIQUE ####
+####                            ####
 
 
 class MainWindow(QMainWindow):
@@ -99,6 +108,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Mon Application")
 
     
+    ## ACTION BOUTONS ##
+
     def __actionConnect(self):
         addr=self.line_edit3.text()
         port = int(addr.split(":")[1])
@@ -178,6 +189,7 @@ class MainWindow(QMainWindow):
     def __actionAide(self):
         QMessageBox.information(self, "Aide","Choisissez une information du pc, de la vm que vous voulez récupérer (l'os, le nom, l'ip, ...).")
 
+    ## FICHIER CSV ##
 
     def CSV(self):
 
@@ -197,6 +209,8 @@ class MainWindow(QMainWindow):
         self.table.show()
         self.show()
 
+
+### MAIN ###
 
 if __name__ == '__main__':
 
