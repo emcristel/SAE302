@@ -9,9 +9,9 @@ msg = ""
 data = ""
 
 
-while msg!= "kill" and data!= "kill":
+while msg!= "kill":
     serveur_socket=socket.socket()
-    serveur_socket.bind(("127.0.0.1", 10000))
+    serveur_socket.bind(("0.0.0.0", 10000))
     serveur_socket.listen(1)
     print("Serveur démarré...")
 
@@ -50,16 +50,16 @@ while msg!= "kill" and data!= "kill":
                 connect.send(msg.encode())
 
             elif data == "disconnect":
-                rien = ""
-                connect.send(rien.encode())
+                msg = ""
+                connect.send(msg.encode())
             
             elif data == "kill":
-                rien = ""
-                connect.send(rien.encode())
+                msg = ""
+                connect.send(msg.encode())
 
             elif data == "kill":
-                rien = ""
-                connect.send(rien.encode())
+                msg = ""
+                connect.send(msg.encode())
 
 
             else: 
@@ -83,8 +83,3 @@ while msg!= "kill" and data!= "kill":
         print ("Connection fermé")
     serveur_socket.close()
     print("Serveur fermé")
-
-
-if data == "kill" or msg == "kill":
-    serveur_socket.close()
-    print ("SERVEUR FERMÉ !")
