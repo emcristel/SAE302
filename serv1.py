@@ -17,6 +17,7 @@ while msg!= "kill":
 
     while msg!="kill" and msg!="reset":
         connect, addr = serveur_socket.accept()
+        print("Connexion réussie ...")
 
         while msg!= "kill" and msg!="reset" and msg!="disconnect":
             data = connect.recv(1024).decode()
