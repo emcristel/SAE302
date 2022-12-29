@@ -1,8 +1,73 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
-import connection
+import threading
+import socket
 
 
+class Client(threading.Thread):
+
+    def __init__(self, host, port):
+        super().__init__()
+        self.__addr = (host, port)
+        self.__socket_client = socket.socket()
+
+    #méthode de connection
+    def __connect(self) -> int:
+        try :
+            self.__socket_client.connect(self.__addr)
+        except ConnectionRefusedError:
+            print ("serveur non lancé ou mauvaise information")
+            return -1
+        except ConnectionError:
+            print ("erreur de connection")
+            return -1
+        else :
+            print ("connexion réalisée")
+            return 0
+
+    def connection(self):
+        self.__socket_client.connect(self.__addr)
+
+    # méthode de dialogue synchrone
+    def __dialogue(self):
+
+        mess = ""
+        data = ""
+
+        while mess != "kill" and mess != "disconnect" and mess != "reset" and data != "kill" and data != "disconnect" and data != "reset":
+            mess = input("client: ")
+            self.__socket_client.send(mess.encode())
+            data = input("server: ")
+            self.__socket_client.recv(1024).decode()
+            print(mess)
+        self.__socket_client.close()
+    
+    def send(self):
+        self.__socket_client.send()
+
+    def recv(self):
+        self.__socket_client.recv()
+
+
+    def run(self):
+        if (self.__connect() ==0):
+            self.__dialogue()
+
+
+if __name__ == '__main__':
+
+
+    if len(sys.argv) < 3:
+        client = Client("127.0.0.1",15001)
+    else :
+        host = sys.argv[1]
+        port = int(sys.argv[2])
+        # création de l'objet client qui est aussi un thread
+        client = Client(host,port)
+    #démarrage de la thread client
+
+    client.start()
+    client.join()
 
 ####                            ####
 #### PARTIE INTERFACE GRAPHIQUE ####
@@ -10,8 +75,9 @@ import connection
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent: Client):
+        super().__init__(parent)
+        self.parent = parent
         widget = QWidget()
         self.setCentralWidget(widget)
         grid = QGridLayout()
@@ -94,7 +160,7 @@ class MainWindow(QMainWindow):
 
     def __actionOkText(self):
         mess = self.text.text()
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
         data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
 
@@ -102,25 +168,25 @@ class MainWindow(QMainWindow):
 
     def __actionOkCbox(self):
         mess = self.choix.currentText()
-        socket_client.send(mess.encode())
-        data = socket_client.recv(1024).decode()
+        self.__socket_client.send(mess.encode())
+        data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
                
 
 
     def __actionQuitter(self):
         mess= "disconnect"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
 
     
     def __actionKill(self):
         mess= "kill"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
         
 
     def __actionReset(self):
         mess= "reset"
-        socket_client.send(mess.encode())
+        self.__socket_client.send(mess.encode())
 
 
     def __actionAide(self):

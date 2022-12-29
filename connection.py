@@ -6,14 +6,13 @@ class Client(threading.Thread):
 
     def __init__(self, host, port):
         super().__init__()
-        self.__host = host
-        self.__port = port
+        self.__addr = (host, port)
         self.__socket_client = socket.socket()
 
     #méthode de connection
     def __connect(self) -> int:
         try :
-            self.__socket_client.connect((self.__host,self.__port))
+            self.__socket_client.connect(self.__addr)
         except ConnectionRefusedError:
             print ("serveur non lancé ou mauvaise information")
             return -1
@@ -25,7 +24,7 @@ class Client(threading.Thread):
             return 0
 
     def connection(self):
-        self.__socket_client.connect((self.__host, self.__port))
+        self.__socket_client.connect(self.__addr)
 
     # méthode de dialogue synchrone
     def __dialogue(self):
