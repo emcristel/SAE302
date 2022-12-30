@@ -17,6 +17,7 @@ class Client(threading.Thread):
         self.__host = host
         self.__port = port
         self.__socket_client = socket.socket()
+        self.__thread = None
         
         print("Connexion établie...")
 
@@ -41,22 +42,38 @@ class Client(threading.Thread):
     # méthode de dialogue synchrone
     def __dialogue(self):
         mess = ""
-        data = ""
+        self.__thread = threading.Thread(target=self.__recv, args=[self.__socket_client, ])
+        self.__thread.start()
         while mess != "kill" and mess != "disconnect" and mess != "reset":
-            mess = input("client: ")
-            self.__socket_client.send(mess.encode())
-            data = input("server: ")
-            self.__socket_client.recv(1024).decode()
-            print(mess)
+            mess = self.__send()
+        self.__thread.join()
         self.__socket_client.close()
     
 
-    def send(self):
-        self.__socket_client.send()
+    def send(self, mess):
+        try:
+            self.__socket_client.send(mess.encode())
+            data = self.__socket_client.recv(1024).decode()
+        except:
+            print("Erreur d'envoi")
+        else:
+            return data
 
 
-    def recv(self):
-        self.__socket_client.recv()
+    def __send(self):
+        mess = input("client:")
+        try:
+            self.__socket.send(mess.encode())
+        except BrokenPipeError:
+            print("Erreur")
+
+
+    def recv(self, socket_client):
+        mess=""
+        while mess != "kill" and mess != "disconnect" and mess != "reset":
+            mess = socket_client.recv(1024).decode()
+            input("Serveur:" )
+            print(mess)
 
 
     def run(self):
@@ -90,7 +107,7 @@ if __name__=="__main__":
 
 class MainWindow(QMainWindow):
 
-    
+
     def __init__(self):
         super().__init__()
         widget = QWidget()
@@ -182,7 +199,6 @@ class MainWindow(QMainWindow):
 
     def __actionOkCbox(self):
         mess = self.choix.currentText()
-        self.__socket= Client.send(self)
         self.__socket_client.send(mess.encode())
         data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
