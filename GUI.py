@@ -1,20 +1,29 @@
+import socket
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QTextEdit
 import threading
-import socket
+
+
+####                         ####
+#### PARTIE THREADING CLIENT ####
+####                         ####
 
 
 class Client(threading.Thread):
 
+
     def __init__(self, host, port):
         super().__init__()
-        self.__addr = (host, port)
+        self.__host = host
+        self.__port = port
         self.__socket_client = socket.socket()
+        
+        print("Connexion établie...")
 
     #méthode de connection
     def __connect(self) -> int:
         try :
-            self.__socket_client.connect(self.__addr)
+            self.__socket_client.connect((self.__host,self.__port))
         except ConnectionRefusedError:
             print ("serveur non lancé ou mauvaise information")
             return -1
@@ -25,16 +34,15 @@ class Client(threading.Thread):
             print ("connexion réalisée")
             return 0
 
+
     def connection(self):
-        self.__socket_client.connect(self.__addr)
+        self.__socket_client.connect((self.__host, self.__port))
 
     # méthode de dialogue synchrone
     def __dialogue(self):
-
         mess = ""
         data = ""
-
-        while mess != "kill" and mess != "disconnect" and mess != "reset" and data != "kill" and data != "disconnect" and data != "reset":
+        while mess != "kill" and mess != "disconnect" and mess != "reset":
             mess = input("client: ")
             self.__socket_client.send(mess.encode())
             data = input("server: ")
@@ -42,8 +50,10 @@ class Client(threading.Thread):
             print(mess)
         self.__socket_client.close()
     
+
     def send(self):
         self.__socket_client.send()
+
 
     def recv(self):
         self.__socket_client.recv()
@@ -54,9 +64,10 @@ class Client(threading.Thread):
             self.__dialogue()
 
 
-if __name__ == '__main__':
+### MAIN ###
 
 
+if __name__=="__main__":
     if len(sys.argv) < 3:
         client = Client("127.0.0.1",15001)
     else :
@@ -65,19 +76,23 @@ if __name__ == '__main__':
         # création de l'objet client qui est aussi un thread
         client = Client(host,port)
     #démarrage de la thread client
-
     client.start()
     client.join()
+    print("Connexion établie...")
+
+
 
 ####                            ####
 #### PARTIE INTERFACE GRAPHIQUE ####
 ####                            ####
 
 
+
 class MainWindow(QMainWindow):
-    def __init__(self, parent: Client):
-        super().__init__(parent)
-        self.parent = parent
+
+    
+    def __init__(self):
+        super().__init__()
         widget = QWidget()
         self.setCentralWidget(widget)
         grid = QGridLayout()
@@ -141,8 +156,8 @@ class MainWindow(QMainWindow):
 
         if self.statut.text() == 'Déconnecté':
             try:
-                socket_client = Client(host, port)
-                socket_client.connection()
+                self.__socket_client = Client(host, port)
+                self.__socket_client.connection()
                 self.statut.setText("Connecté")
                 self.statut.setStyleSheet("background-color: blue; font-weight: bold; color: black;")
 
@@ -156,23 +171,22 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Conexion", "Connection déjà en cours")
             
 
-
-
     def __actionOkText(self):
+
+        self.__socket_client = Client(mess)
         mess = self.text.text()
         self.__socket_client.send(mess.encode())
         data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
 
 
-
     def __actionOkCbox(self):
         mess = self.choix.currentText()
+        self.__socket= Client.send(self)
         self.__socket_client.send(mess.encode())
         data = self.__socket_client.recv(1024).decode()
         self.info.append(f"{data}")
                
-
 
     def __actionQuitter(self):
         mess= "disconnect"
@@ -196,8 +210,7 @@ class MainWindow(QMainWindow):
 ### MAIN ###
 
 if __name__ == '__main__':
-
-
+    
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
