@@ -13,11 +13,13 @@ while msg!= "kill":
     serveur_socket=socket.socket()
     serveur_socket.bind(("0.0.0.0", 10000))
     serveur_socket.listen(1)
-    print("Serveur démarré...")
+    print("Serveur démarré en attente de connexion...")
 
     while msg!="kill" and msg!="reset":
         connect, addr = serveur_socket.accept()
         print("Connexion réussie ...")
+        connect.send(
+        f"Connexion éatblie avec le serveur {platform.node()}, son IP est : {netaddr_adresse_ip}".encode())
 
         while msg!= "kill" and msg!="reset" and msg!="disconnect":
             data = connect.recv(1024).decode()
@@ -47,7 +49,7 @@ while msg!= "kill":
 
             elif data == "name" or data == "Name" :
                 name=platform.node()
-                msg=str(f"Mon nom est: {name}")
+                msg=str(f"Nom de la machine: {name}")
                 connect.send(msg.encode())
 
             elif data == "disconnect":
@@ -58,7 +60,7 @@ while msg!= "kill":
                 msg = ""
                 connect.send(msg.encode())
 
-            elif data == "kill":
+            elif data == "reset":
                 msg = ""
                 connect.send(msg.encode())
 
