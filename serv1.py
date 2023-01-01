@@ -72,7 +72,7 @@ def thread_reception(client):
             print("Serveur fermé")
             break
 
-        elif data == "kill" or data == "KILL" or data == "Kill":
+        elif data == "reset" or data == "RESET" or data == "Reset":
             client.close()
             clients()
             print("Connection fermée")
