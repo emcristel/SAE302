@@ -124,9 +124,7 @@ class MainWindow(QMainWindow):
             self.__socket_client.close()
             self.thread_reception.terminate()
             self.info.clear()
-            self.statut.setText("Déconnecté")
-            self.statut.setStyleSheet("background-color: red; font-weight: bold; color: black;")
-            QMessageBox.information(self, "Deconnexion", "Deconnexion réussie")
+            QApplication.exit(0)
         else:
             QMessageBox.warning(self, "Deconnexion", "Déja déconnecté")
         
