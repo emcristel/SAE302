@@ -62,6 +62,7 @@ def thread_reception(client):
             client.close()
             clients()
             print("Connection fermée")
+            break
 
 
         elif data == "kill" or data == "KILL" or data == "Kill":
